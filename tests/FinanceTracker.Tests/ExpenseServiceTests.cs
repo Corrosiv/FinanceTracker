@@ -194,4 +194,70 @@ public class ExpenseServiceTests
         Assert.Equal("Phone bill", updated.RawDescription);
         Assert.Equal(originalDate, updated.Date);
     }
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsPositiveAmountTransaction()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ExpenseService(db);
+
+        // Add a positive-amount transaction (income) directly
+        var income = new Transaction
+        {
+            Id = Guid.NewGuid(),
+            UserId = UserId,
+            ImportId = ImportId,
+            Amount = 500m,
+            RawDescription = "Salary",
+            NormalizedDescription = "salary",
+            Date = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+        db.Transactions.Add(income);
+        await db.SaveChangesAsync();
+
+        // GetById returns it even though GetAll would filter it out
+        var fetched = await svc.GetByIdAsync(income.Id);
+        Assert.NotNull(fetched);
+        Assert.Equal(500m, fetched!.Amount);
+
+        // GetAll does NOT include it
+        var all = (await svc.GetAllAsync()).ToList();
+        Assert.DoesNotContain(all, t => t.Id == income.Id);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WhitespaceOnlyDescription_NormalizesToEmpty()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ExpenseService(db);
+        var tx = await svc.CreateAsync(new Transaction
+        {
+            UserId = UserId, ImportId = ImportId,
+            Amount = -10m, RawDescription = "Original", NormalizedDescription = "original",
+            Date = DateTime.UtcNow
+        });
+
+        var updated = await svc.UpdateAsync(tx.Id, amount: null, description: "   ", date: null, categoryId: null);
+
+        Assert.NotNull(updated);
+        Assert.Equal("   ", updated!.RawDescription);
+        Assert.Equal("", updated.NormalizedDescription);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_SameEntityTwice_SecondReturnsFalse()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ExpenseService(db);
+        var tx = await svc.CreateAsync(new Transaction
+        {
+            UserId = UserId, ImportId = ImportId,
+            Amount = -8m, RawDescription = "DoubleDelete", NormalizedDescription = "doubledelete",
+            Date = DateTime.UtcNow
+        });
+
+        Assert.True(await svc.DeleteAsync(tx.Id));
+        Assert.False(await svc.DeleteAsync(tx.Id));
+    }
 }

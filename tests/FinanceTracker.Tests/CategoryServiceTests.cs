@@ -80,4 +80,28 @@ public class CategoryServiceTests
         var svc = new CategoryService(db);
         Assert.False(await svc.DeleteAsync(Guid.NewGuid()));
     }
+
+    [Fact]
+    public async Task GetByIdAsync_NonExistent_ReturnsNull()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new CategoryService(db);
+        var result = await svc.GetByIdAsync(Guid.NewGuid());
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_SameEntityTwice_SecondReturnsFalse()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new CategoryService(db);
+        var cat = await svc.CreateAsync(new Category
+        {
+            UserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Name = "DoubleDeleteCat"
+        });
+
+        Assert.True(await svc.DeleteAsync(cat.Id));
+        Assert.False(await svc.DeleteAsync(cat.Id));
+    }
 }
