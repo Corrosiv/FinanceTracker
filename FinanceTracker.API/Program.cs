@@ -14,6 +14,10 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IImportService, ImportService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<ICategoryAssignmentService, CategoryAssignmentService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+builder.Services.AddScoped<ITipsService, TipsService>();
 
 var app = builder.Build();
 

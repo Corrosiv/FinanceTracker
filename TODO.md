@@ -89,6 +89,8 @@ Backlog / Future (V2+)
 - Automatic transaction categorization (ML)
 - Multi-currency support and FX handling
 - Real-time alerts/notifications and webhooks
+- Budget history — track budget limit changes over time (start/end dates or versioning)
+- Category assignment by description — bulk assign all transactions matching a normalized description to a category
 
 Acceptance criteria template (use per task)
 - Given X, When Y, Then Z — include endpoint, payload, expected DB state, and tests.

@@ -11,6 +11,7 @@ namespace FinanceTracker.API.Controllers;
 public class ExpensesController : ControllerBase
 {
     private readonly IExpenseService _expenseService;
+    private readonly ICategoryAssignmentService _categoryAssignmentService;
 
     // V1: single implicit user
     private static readonly Guid DefaultUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
@@ -18,9 +19,10 @@ public class ExpensesController : ControllerBase
     // V1: expenses entered manually use a placeholder import
     private static readonly Guid ManualImportId = Guid.Parse("00000000-0000-0000-0000-000000000002");
 
-    public ExpensesController(IExpenseService expenseService)
+    public ExpensesController(IExpenseService expenseService, ICategoryAssignmentService categoryAssignmentService)
     {
         _expenseService = expenseService;
+        _categoryAssignmentService = categoryAssignmentService;
     }
 
     [HttpGet]
@@ -85,6 +87,21 @@ public class ExpensesController : ControllerBase
         var deleted = await _expenseService.DeleteAsync(id);
         if (!deleted) return NotFound();
         return NoContent();
+    }
+
+    [HttpPut("assign-category")]
+    public async Task<IActionResult> AssignCategory([FromBody] BulkCategoryAssignmentDto dto)
+    {
+        if (dto.TransactionIds.Count == 0)
+            return BadRequest(new { errors = new[] { "At least one TransactionId is required." } });
+
+        if (dto.CategoryId == Guid.Empty)
+            return BadRequest(new { errors = new[] { "CategoryId is required." } });
+
+        var result = await _categoryAssignmentService.AssignCategoryAsync(
+            DefaultUserId, dto.TransactionIds, dto.CategoryId);
+
+        return Ok(result);
     }
 
     private static ExpenseResponseDto ToDto(Transaction t) => new()

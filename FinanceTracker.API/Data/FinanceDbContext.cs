@@ -87,7 +87,7 @@ namespace FinanceTracker.API.Data
             modelBuilder.Entity<Budget>(e =>
             {
                 e.HasKey(b => b.Id);
-                e.HasIndex(b => new { b.UserId, b.CategoryId, b.Period });
+                e.HasIndex(b => new { b.UserId, b.CategoryId, b.Period }).IsUnique();
                 e.Property(b => b.LimitAmount).HasColumnType("decimal(12,2)");
                 e.Property(b => b.Period).HasConversion<string>();
                 e.HasOne(b => b.User)
