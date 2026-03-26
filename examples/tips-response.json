@@ -1,0 +1,15 @@
+{
+  "generatedTips": [
+    "You spent most on Groceries this month.",
+    "Recurring charge detected: Gym Membership."
+  ],
+  "rawAnalytics": {
+    "topCategories": [
+      { "category": "Groceries", "amount": 120.00 }
+    ],
+    "recurringCharges": [
+      { "description": "Gym Membership", "amount": 30.00 }
+    ],
+    "savingsRate": 0.6
+  }
+}

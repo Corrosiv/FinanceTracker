@@ -1,0 +1,9 @@
+{
+  "id": "b3c4d5e6-7f8a-9012-3456-789abcdef012",
+  "categoryId": "c1e1b2a3-4d5f-6789-0123-456789abcdef",
+  "period": "Monthly",
+  "limitAmount": 500.00,
+  "spentAmount": 120.00,
+  "remainingAmount": 380.00,
+  "isOverBudget": false
+}

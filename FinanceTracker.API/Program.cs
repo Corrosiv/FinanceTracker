@@ -60,6 +60,18 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+// Add custom JSON error for 404 responses
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+    if (response.StatusCode == StatusCodes.Status404NotFound)
+    {
+        response.ContentType = "application/json";
+        var body = System.Text.Json.JsonSerializer.Serialize(new { error = "Resource not found." });
+        await response.WriteAsync(body);
+    }
+});
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();

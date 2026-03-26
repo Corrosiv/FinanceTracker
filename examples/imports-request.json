@@ -1,0 +1,8 @@
+{
+  "file": "us-bank-statement.csv",
+  "columnMapping": {
+    "Date": "date",
+    "Amount": "amount",
+    "Description": "description"
+  }
+}

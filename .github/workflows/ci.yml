@@ -26,3 +26,12 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Install EF Core Tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: List EF Core Migrations
+        run: dotnet ef migrations list --project FinanceTracker.API/FinanceTracker.API.csproj
+
+      - name: Validate EF Core Migrations (dry run)
+        run: dotnet ef database update --project FinanceTracker.API/FinanceTracker.API.csproj --no-build --dry-run

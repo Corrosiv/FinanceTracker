@@ -1,0 +1,17 @@
+{
+  "spendingByCategory": [
+    { "category": "Groceries", "amount": 120.00 },
+    { "category": "Utilities", "amount": 80.00 }
+  ],
+  "categoryTrends": [
+    { "category": "Groceries", "monthly": [100.00, 120.00, 110.00] }
+  ],
+  "recurringCharges": [
+    { "description": "Gym Membership", "amount": 30.00, "frequency": "Monthly" }
+  ],
+  "incomeExpenseSummary": {
+    "income": 2000.00,
+    "expenses": 800.00,
+    "savingsRate": 0.6
+  }
+}
