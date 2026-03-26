@@ -6,6 +6,6 @@ namespace FinanceTracker.API.Services
     public interface IExpenseService
     {
         Task<Expense> CreateAsync(Expense expense);
-        Task<Expense?> GetByIdAsync(int id);
+        Task<Expense?> GetByIdAsync(Guid id);
     }
 }

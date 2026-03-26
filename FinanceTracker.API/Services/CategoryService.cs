@@ -11,7 +11,7 @@ namespace FinanceTracker.API.Services
 
         public Task<Category> CreateAsync(Category category)
         {
-            category.Id = _store.Count + 1;
+            category.Id = Guid.NewGuid();
             _store.Add(category);
             return Task.FromResult(category);
         }
@@ -21,7 +21,7 @@ namespace FinanceTracker.API.Services
             return Task.FromResult<IEnumerable<Category>>(_store);
         }
 
-        public Task<Category?> GetByIdAsync(int id)
+        public Task<Category?> GetByIdAsync(Guid id)
         {
             var c = _store.FirstOrDefault(x => x.Id == id);
             return Task.FromResult(c);

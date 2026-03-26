@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 using FinanceTracker.API.Services;
 using FinanceTracker.API.Models;
@@ -15,7 +16,7 @@ public class ExpenseServiceTests
 
         var created = await svc.CreateAsync(exp);
         Assert.NotNull(created);
-        Assert.Equal(1, created.Id);
+        Assert.NotEqual(Guid.Empty, created.Id);
 
         var fetched = await svc.GetByIdAsync(created.Id);
         Assert.NotNull(fetched);
