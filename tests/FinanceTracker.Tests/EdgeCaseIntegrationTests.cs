@@ -61,7 +61,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     // ── Categories Edge Cases ──────────────────────────────────────────
 
     [Fact]
-    public async Task CreateCategory_NullDescription_ReturnsCreated()
+    public async Task WhenCreatingCategoryWithNullDescription_ShouldReturnCreated()
     {
         var dto = new CreateCategoryDto { Name = "NullDescCat" };
         var response = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -72,7 +72,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateCategory_WhitespaceOnlyName_ReturnsBadRequest()
+    public async Task WhenCreatingCategoryWithWhitespaceName_ShouldReturnBadRequest()
     {
         var dto = new CreateCategoryDto { Name = "   \t  " };
         var response = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -81,7 +81,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateCategory_NameExactly255Chars_ReturnsCreated()
+    public async Task WhenCreatingCategoryWithMaxLengthName_ShouldReturnCreated()
     {
         var dto = new CreateCategoryDto { Name = new string('X', 255) };
         var response = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -92,7 +92,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateCategory_NameExceeds255Chars_ReturnsBadRequest()
+    public async Task WhenCreatingCategoryWithOverMaxLengthName_ShouldReturnBadRequest()
     {
         var dto = new CreateCategoryDto { Name = new string('X', 256) };
         var response = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -101,7 +101,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task DeleteCategory_WithLinkedExpenses_ExpensesSurvive()
+    public async Task WhenDeletingCategoryWithLinkedExpenses_ExpensesShouldSurvive()
     {
         // Create category
         var catDto = new CreateCategoryDto { Name = "LinkedCat" };
@@ -131,7 +131,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     // ── Expenses Edge Cases ────────────────────────────────────────────
 
     [Fact]
-    public async Task CreateExpense_NegativeAmount_ReturnsAbsoluteValue()
+    public async Task WhenCreatingExpenseWithNegativeAmount_ShouldReturnAbsoluteValue()
     {
         var dto = new CreateExpenseDto
         {
@@ -147,7 +147,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateExpense_WithCategoryId_ReflectedInResponse()
+    public async Task WhenCreatingExpenseWithCategoryId_ShouldReflectInResponse()
     {
         var catDto = new CreateCategoryDto { Name = "WithCatEdge" };
         var catResponse = await _client.PostAsJsonAsync("/api/v1/categories", catDto);
@@ -168,7 +168,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateExpense_NullCategoryId_ReturnsCreatedUncategorized()
+    public async Task WhenCreatingExpenseWithNullCategoryId_ShouldReturnUncategorized()
     {
         var dto = new CreateExpenseDto
         {
@@ -185,7 +185,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task UpdateExpense_ZeroAmount_IsAccepted()
+    public async Task WhenUpdatingExpenseWithZeroAmount_ShouldBeAccepted()
     {
         var createDto = new CreateExpenseDto
         {
@@ -204,7 +204,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task UpdateExpense_EmptyDescription_IsAccepted()
+    public async Task WhenUpdatingExpenseWithEmptyDescription_ShouldBeAccepted()
     {
         var createDto = new CreateExpenseDto
         {
@@ -223,7 +223,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task UpdateExpense_NegativeAmount_ReturnsAbsoluteValue()
+    public async Task WhenUpdatingExpenseWithNegativeAmount_ShouldReturnAbsoluteValue()
     {
         var createDto = new CreateExpenseDto
         {

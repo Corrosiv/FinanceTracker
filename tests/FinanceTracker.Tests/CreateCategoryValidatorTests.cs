@@ -7,7 +7,7 @@ namespace FinanceTracker.Tests;
 public class CreateCategoryValidatorTests
 {
     [Fact]
-    public void ValidDto_ReturnsNoErrors()
+    public void WhenValidatingValidDto_ShouldReturnNoErrors()
     {
         var dto = new CreateCategoryDto { Name = "Groceries", Description = "Food" };
         var errors = CreateCategoryValidator.Validate(dto);
@@ -15,7 +15,7 @@ public class CreateCategoryValidatorTests
     }
 
     [Fact]
-    public void NullName_ReturnsError()
+    public void WhenNameIsNull_ShouldReturnError()
     {
         var dto = new CreateCategoryDto { Name = null! };
         var errors = CreateCategoryValidator.Validate(dto);
@@ -24,7 +24,7 @@ public class CreateCategoryValidatorTests
     }
 
     [Fact]
-    public void EmptyName_ReturnsError()
+    public void WhenNameIsEmpty_ShouldReturnError()
     {
         var dto = new CreateCategoryDto { Name = "" };
         var errors = CreateCategoryValidator.Validate(dto);
@@ -33,7 +33,7 @@ public class CreateCategoryValidatorTests
     }
 
     [Fact]
-    public void WhitespaceName_ReturnsError()
+    public void WhenNameIsWhitespace_ShouldReturnError()
     {
         var dto = new CreateCategoryDto { Name = "   " };
         var errors = CreateCategoryValidator.Validate(dto);
@@ -42,7 +42,7 @@ public class CreateCategoryValidatorTests
     }
 
     [Fact]
-    public void NameExceeds255Chars_ReturnsError()
+    public void WhenNameExceeds255Chars_ShouldReturnError()
     {
         var dto = new CreateCategoryDto { Name = new string('A', 256) };
         var errors = CreateCategoryValidator.Validate(dto);
@@ -51,7 +51,7 @@ public class CreateCategoryValidatorTests
     }
 
     [Fact]
-    public void NameExactly255Chars_ReturnsNoErrors()
+    public void WhenNameIsExactly255Chars_ShouldReturnNoErrors()
     {
         var dto = new CreateCategoryDto { Name = new string('A', 255) };
         var errors = CreateCategoryValidator.Validate(dto);
@@ -59,7 +59,7 @@ public class CreateCategoryValidatorTests
     }
 
     [Fact]
-    public void NullDescription_IsAllowed()
+    public void WhenDescriptionIsNull_ShouldBeAllowed()
     {
         var dto = new CreateCategoryDto { Name = "Food", Description = null };
         var errors = CreateCategoryValidator.Validate(dto);

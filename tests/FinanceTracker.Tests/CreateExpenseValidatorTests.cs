@@ -8,7 +8,7 @@ namespace FinanceTracker.Tests;
 public class CreateExpenseValidatorTests
 {
     [Fact]
-    public void ValidDto_ReturnsNoErrors()
+    public void WhenValidatingValidDto_ShouldReturnNoErrors()
     {
         var dto = new CreateExpenseDto
         {
@@ -21,7 +21,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void ZeroAmount_ReturnsError()
+    public void WhenAmountIsZero_ShouldReturnError()
     {
         var dto = new CreateExpenseDto
         {
@@ -35,7 +35,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void NullDescription_ReturnsError()
+    public void WhenDescriptionIsNull_ShouldReturnError()
     {
         var dto = new CreateExpenseDto
         {
@@ -49,7 +49,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void EmptyDescription_ReturnsError()
+    public void WhenDescriptionIsEmpty_ShouldReturnError()
     {
         var dto = new CreateExpenseDto
         {
@@ -63,7 +63,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void WhitespaceDescription_ReturnsError()
+    public void WhenDescriptionIsWhitespace_ShouldReturnError()
     {
         var dto = new CreateExpenseDto
         {
@@ -77,7 +77,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void DefaultDate_ReturnsError()
+    public void WhenDateIsDefault_ShouldReturnError()
     {
         var dto = new CreateExpenseDto
         {
@@ -91,7 +91,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void AllFieldsInvalid_ReturnsMultipleErrors()
+    public void WhenAllFieldsAreInvalid_ShouldReturnMultipleErrors()
     {
         var dto = new CreateExpenseDto
         {
@@ -104,7 +104,7 @@ public class CreateExpenseValidatorTests
     }
 
     [Fact]
-    public void NegativeAmount_IsAllowed()
+    public void WhenAmountIsNegative_ShouldBeAllowed()
     {
         var dto = new CreateExpenseDto
         {

@@ -23,7 +23,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task CreateAndGetCategory()
+    public async Task WhenCreatingCategory_ShouldPersistAndReturnWithId()
     {
         using var db = CreateInMemoryDb();
         var svc = new CategoryService(db);
@@ -44,7 +44,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task GetAllReturnsCategories()
+    public async Task WhenGettingAll_ShouldReturnAllCategories()
     {
         using var db = CreateInMemoryDb();
         var svc = new CategoryService(db);
@@ -58,7 +58,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task DeleteRemovesCategory()
+    public async Task WhenDeletingExistingCategory_ShouldRemoveFromDatabase()
     {
         using var db = CreateInMemoryDb();
         var svc = new CategoryService(db);
@@ -74,7 +74,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task DeleteNonExistentReturnsFalse()
+    public async Task WhenDeletingNonExistentCategory_ShouldReturnFalse()
     {
         using var db = CreateInMemoryDb();
         var svc = new CategoryService(db);
@@ -82,7 +82,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task GetByIdAsync_NonExistent_ReturnsNull()
+    public async Task WhenGettingNonExistentCategory_ShouldReturnNull()
     {
         using var db = CreateInMemoryDb();
         var svc = new CategoryService(db);
@@ -91,7 +91,7 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task DeleteAsync_SameEntityTwice_SecondReturnsFalse()
+    public async Task WhenDeletingSameCategoryTwice_SecondDeleteShouldReturnFalse()
     {
         using var db = CreateInMemoryDb();
         var svc = new CategoryService(db);
