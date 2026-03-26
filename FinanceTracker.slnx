@@ -1,7 +1,12 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="API-SPEC.md" />
+    <File Path="database-design.md" />
+    <File Path="domain-model.md" />
     <File Path="README.md" />
+    <File Path="system-overview.md" />
+    <File Path="TODO.md" />
   </Folder>
   <Project Path="FinanceTracker.API/FinanceTracker.API.csproj" />
 </Solution>
