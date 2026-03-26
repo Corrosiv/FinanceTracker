@@ -40,4 +40,16 @@ public class CategoryService : ICategoryService
         await _db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<Category?> UpdateAsync(Guid id, string? name, string? description)
+    {
+        var category = await _db.Categories.FindAsync(id);
+        if (category is null) return null;
+
+        if (name is not null) category.Name = name;
+        if (description is not null) category.Description = description;
+
+        await _db.SaveChangesAsync();
+        return category;
+    }
 }
