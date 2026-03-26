@@ -265,7 +265,10 @@ http://localhost:5000/api/v1
 
 ---
 
-## 5. Analytics (Optional Reports)
+## 5. Analytics
+
+> **Note:** Analytics focus exclusively on expense transactions (`Amount < 0`).
+> Income is included only in the summary endpoint for context (savings rate, income vs. expenses).
 
 ### 5.1 Spending per Category
 
@@ -286,14 +289,93 @@ http://localhost:5000/api/v1
   {
     "category_id": "uuid-category-id",
     "category_name": "Groceries",
-    "total_spent": 250.50
+    "total_spent": 250.50,
+    "rank": 1
   }
 ]
 ```
 
 ---
 
-### 5.2 Budget Alerts
+### 5.2 Category Trends (Month-over-Month)
+
+**GET** `/analytics/trends`
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|-------|------|------------|
+| category_id | uuid | Optional — filter to a specific category |
+| months | integer | Number of months to compare (default 3) |
+
+**Response (200 OK):**
+
+```json
+[
+  {
+    "category_id": "uuid-category-id",
+    "category_name": "Dining",
+    "periods": [
+      { "month": "2026-01", "total_spent": 180.00 },
+      { "month": "2026-02", "total_spent": 230.00 },
+      { "month": "2026-03", "total_spent": 310.00 }
+    ],
+    "change_percent": 34.78
+  }
+]
+```
+
+---
+
+### 5.3 Recurring Charges
+
+**GET** `/analytics/recurring`
+
+**Description:** Detects transactions that repeat with similar amounts and descriptions across months (e.g., subscriptions).
+
+**Response (200 OK):**
+
+```json
+[
+  {
+    "normalized_description": "netflix",
+    "average_amount": -15.99,
+    "occurrences": 6,
+    "last_date": "2026-03-01",
+    "frequency": "monthly"
+  }
+]
+```
+
+---
+
+### 5.4 Income vs. Expenses Summary
+
+**GET** `/analytics/summary`
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|-------|------|------------|
+| start_date | date | Optional |
+| end_date | date | Optional |
+
+**Response (200 OK):**
+
+```json
+{
+  "total_income": 5000.00,
+  "total_expenses": -3200.00,
+  "net": 1800.00,
+  "savings_rate": 0.36
+}
+```
+
+**Notes:** This is the only analytics endpoint that uses income data. No tips are generated for income.
+
+---
+
+### 5.5 Budget Alerts
 
 **GET** `/analytics/alerts`
 
@@ -308,6 +390,33 @@ http://localhost:5000/api/v1
     "spent_amount": 900.00,
     "budget_limit": 1000.00,
     "alert": "Approaching budget limit"
+  }
+]
+```
+
+---
+
+### 5.6 Tips / Recommendations (scaffolded — approach TBD)
+
+> Both options are scaffolded so the decision can be made later.
+
+**GET** `/analytics/tips`
+
+**Option A — Raw data only:** Returns the same data as other analytics endpoints in a combined view; the client generates user-facing tips.
+
+**Option B — Generated tips:** Returns pre-built tip strings.
+
+```json
+[
+  {
+    "type": "category_trend",
+    "message": "You spent 35% more on Dining this month compared to last month.",
+    "data": { "category": "Dining", "change_percent": 34.78 }
+  },
+  {
+    "type": "recurring",
+    "message": "You have 4 recurring subscriptions totaling $65.96/month.",
+    "data": { "count": 4, "total": 65.96 }
   }
 ]
 ```

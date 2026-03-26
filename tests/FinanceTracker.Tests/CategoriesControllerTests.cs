@@ -56,7 +56,7 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task GetAll_ReturnsOkAndEmptyList()
+    public async Task WhenGettingAllCategories_ShouldReturnOk()
     {
         var response = await _client.GetAsync("/api/v1/categories");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -66,7 +66,7 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task Create_ValidDto_ReturnsCreated()
+    public async Task WhenCreatingValidCategory_ShouldReturnCreated()
     {
         var dto = new CreateCategoryDto { Name = "Food", Description = "Groceries" };
         var response = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -81,7 +81,7 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task Create_EmptyName_ReturnsBadRequest()
+    public async Task WhenCreatingCategoryWithEmptyName_ShouldReturnBadRequest()
     {
         var dto = new CreateCategoryDto { Name = "" };
         var response = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -90,7 +90,7 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task GetById_ExistingCategory_ReturnsOk()
+    public async Task WhenGettingExistingCategoryById_ShouldReturnOk()
     {
         var dto = new CreateCategoryDto { Name = "Transport" };
         var createResponse = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -104,14 +104,14 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task GetById_NonExistent_ReturnsNotFound()
+    public async Task WhenGettingNonExistentCategoryById_ShouldReturnNotFound()
     {
         var response = await _client.GetAsync($"/api/v1/categories/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
-    public async Task Delete_ExistingCategory_ReturnsNoContent()
+    public async Task WhenDeletingExistingCategory_ShouldReturnNoContent()
     {
         var dto = new CreateCategoryDto { Name = "ToDelete" };
         var createResponse = await _client.PostAsJsonAsync("/api/v1/categories", dto);
@@ -126,7 +126,7 @@ public class CategoriesControllerTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task Delete_NonExistent_ReturnsNotFound()
+    public async Task WhenDeletingNonExistentCategory_ShouldReturnNotFound()
     {
         var response = await _client.DeleteAsync($"/api/v1/categories/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

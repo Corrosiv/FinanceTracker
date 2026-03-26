@@ -74,6 +74,14 @@ Represents a single financial event (income or expense).
 - Transactions are **immutable** (date, amount, description do not change after import)
 - Deduplication is performed using a hash or composite unique constraint on `user_id + date + amount + normalized_description`
 
+### 3.1 Income vs. Expense Classification
+
+- **Expense**: any `Transaction` where `Amount < 0`. This is a *view/lens* on Transaction, not a separate entity.
+- **Income**: any `Transaction` where `Amount > 0`.
+- The `Expense` class in the codebase is a lightweight view model / DTO projected from `Transaction`. It does **not** have its own database table.
+- **Income** transactions are stored and used for summary/context (e.g., savings rate, income vs. expenses overview) but the system does **not** generate tips or recommendations for income.
+- All analytics, pattern detection, and budgeting focus exclusively on expenses.
+
 ---
 
 ## 4. Category
@@ -120,6 +128,7 @@ Represents a spending limit over a period for a specific category.
 **Notes:**
 
 - Budgets are used for generating alerts when spending approaches or exceeds limits.
+- **Budget flow**: user imports transactions → system shows spending patterns → system suggests budget limits based on patterns → user accepts or adjusts → budget alerts kick in.
 
 ---
 

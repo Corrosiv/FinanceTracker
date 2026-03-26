@@ -80,4 +80,21 @@ public class CategoriesController : ControllerBase
         if (!deleted) return NotFound();
         return NoContent();
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryDto dto)
+    {
+        if (dto.Name is null && dto.Description is null)
+            return BadRequest(new { errors = new[] { "At least one field (name or description) must be provided." } });
+
+        var updated = await _categoryService.UpdateAsync(id, dto.Name, dto.Description);
+        if (updated is null) return NotFound();
+
+        return Ok(new CategoryResponseDto
+        {
+            Id = updated.Id,
+            Name = updated.Name,
+            Description = updated.Description
+        });
+    }
 }

@@ -34,7 +34,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task CreateAndGetExpense()
+    public async Task WhenCreatingExpense_ShouldPersistAndReturnWithId()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -58,7 +58,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task GetAllReturnsOnlyExpenses()
+    public async Task WhenGettingAll_ShouldReturnOnlyNegativeAmountTransactions()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -85,7 +85,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task DeleteRemovesExpense()
+    public async Task WhenDeletingExistingExpense_ShouldRemoveFromDatabase()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -101,7 +101,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_UpdatesAmount()
+    public async Task WhenUpdatingAmount_ShouldOnlyChangeAmountField()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -120,7 +120,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_UpdatesDescription()
+    public async Task WhenUpdatingDescription_ShouldUpdateBothRawAndNormalized()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -140,7 +140,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_UpdatesDateAndCategory()
+    public async Task WhenUpdatingDateAndCategory_ShouldUpdateBothFields()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -164,7 +164,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_NonExistentReturnsNull()
+    public async Task WhenUpdatingNonExistentExpense_ShouldReturnNull()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -175,7 +175,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_NoChangesPreservesOriginal()
+    public async Task WhenUpdatingWithNoChanges_ShouldPreserveOriginalValues()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -196,7 +196,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task GetByIdAsync_ReturnsPositiveAmountTransaction()
+    public async Task WhenGettingIncomeById_ShouldReturnItEvenThoughGetAllExcludesIt()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -227,7 +227,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_WhitespaceOnlyDescription_NormalizesToEmpty()
+    public async Task WhenUpdatingWithWhitespaceDescription_ShouldNormalizeToEmpty()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);
@@ -246,7 +246,7 @@ public class ExpenseServiceTests
     }
 
     [Fact]
-    public async Task DeleteAsync_SameEntityTwice_SecondReturnsFalse()
+    public async Task WhenDeletingSameExpenseTwice_SecondDeleteShouldReturnFalse()
     {
         using var db = CreateInMemoryDb();
         var svc = new ExpenseService(db);

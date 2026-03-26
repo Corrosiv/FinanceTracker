@@ -60,14 +60,14 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task GetAll_ReturnsOk()
+    public async Task WhenGettingAllExpenses_ShouldReturnOk()
     {
         var response = await _client.GetAsync("/api/v1/expenses");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
-    public async Task Create_ValidDto_ReturnsCreated()
+    public async Task WhenCreatingValidExpense_ShouldReturnCreated()
     {
         var dto = new CreateExpenseDto
         {
@@ -86,7 +86,7 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Create_ZeroAmount_ReturnsBadRequest()
+    public async Task WhenCreatingExpenseWithZeroAmount_ShouldReturnBadRequest()
     {
         var dto = new CreateExpenseDto
         {
@@ -100,7 +100,7 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Create_MissingDescription_ReturnsBadRequest()
+    public async Task WhenCreatingExpenseWithEmptyDescription_ShouldReturnBadRequest()
     {
         var dto = new CreateExpenseDto
         {
@@ -114,7 +114,7 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task GetById_ExistingExpense_ReturnsOk()
+    public async Task WhenGettingExistingExpenseById_ShouldReturnOk()
     {
         var dto = new CreateExpenseDto
         {
@@ -133,14 +133,14 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task GetById_NonExistent_ReturnsNotFound()
+    public async Task WhenGettingNonExistentExpenseById_ShouldReturnNotFound()
     {
         var response = await _client.GetAsync($"/api/v1/expenses/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
-    public async Task Update_ExistingExpense_ReturnsOk()
+    public async Task WhenUpdatingExistingExpense_ShouldReturnOk()
     {
         var createDto = new CreateExpenseDto
         {
@@ -161,7 +161,7 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Update_NonExistent_ReturnsNotFound()
+    public async Task WhenUpdatingNonExistentExpense_ShouldReturnNotFound()
     {
         var updateDto = new UpdateExpenseDto { Amount = 5m };
         var response = await _client.PutAsJsonAsync($"/api/v1/expenses/{Guid.NewGuid()}", updateDto);
@@ -169,7 +169,7 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Delete_ExistingExpense_ReturnsNoContent()
+    public async Task WhenDeletingExistingExpense_ShouldReturnNoContent()
     {
         var dto = new CreateExpenseDto
         {
@@ -188,7 +188,7 @@ public class ExpensesControllerTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task Delete_NonExistent_ReturnsNotFound()
+    public async Task WhenDeletingNonExistentExpense_ShouldReturnNotFound()
     {
         var response = await _client.DeleteAsync($"/api/v1/expenses/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
