@@ -20,7 +20,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FinanceDbContext>();
-    db.Database.Migrate();
+
+    if (db.Database.IsRelational())
+        db.Database.Migrate();
+    else
+        db.Database.EnsureCreated();
 
     var defaultUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     if (!db.Users.Any(u => u.Id == defaultUserId))
@@ -56,3 +60,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Make the implicit Program class accessible to integration tests
+public partial class Program { }

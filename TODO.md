@@ -14,8 +14,12 @@ Sprint 1 — MVP (P0)
   - Implement EF Core models: `User` (placeholder), `Transaction`/`Expense`, `Category`, `Budget`, `Import` (4h)
   - CRUD endpoints for `Category` and `Expense` (controllers, DTOs, validators) (6h)
   - Configure `FinanceDbContext` and initial data seeding (2h)
-  - Add Swagger / OpenAPI and basic examples (1h)
+  - Add Scalar / OpenAPI and basic examples (1h)
   - Add GitHub Actions: build + tests on PR (2h)
+  - Unit tests for `UpdateAsync` (Category and Expense services) (1h)
+  - Unit tests for validators (`CreateCategoryValidator`, `CreateExpenseValidator`) (1h)
+  - Controller-level integration tests (HTTP status codes, routing, DTO mapping) (3h)
+  - Edge-case tests (duplicate category names, invalid CategoryId on expense, empty/null inputs) (2h)
 
 ---
 
@@ -30,6 +34,11 @@ Sprint 2 — Imports & Deduplication (P0)
   - Normalization pipeline that maps CSV -> `Transaction` entities (4h)
   - Deduplication strategy (composite unique constraint + optional SHA256 hash) and tests (4h)
   - Import validation/error reporting for malformed files (3h)
+  - DB-level edge-case tests using SQLite in-memory (requires real provider, not EF InMemory) (2h)
+    - Duplicate category name per user → `UNIQUE(UserId, Name)` returns 409/Conflict
+    - Duplicate transaction (same user+date+amount+description) → `UNIQUE` constraint
+    - Expense with non-existent `CategoryId` → FK violation handling
+    - Add `UpdateExpenseValidator` to block zero amount and empty description on update path
 
 ---
 
