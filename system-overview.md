@@ -27,7 +27,13 @@ Support CSV files from different financial institutions by dynamically mapping c
 Prevent duplicate transactions when users import overlapping CSV files.
 
 ### Financial Insight
-Allow users to track spending, categorize transactions, and monitor budgets.
+Allow users to track spending, categorize transactions, and monitor budgets. Specifically:
+
+- **Recurring charges detection** — identify subscriptions and repeated expenses
+- **Category trends** — month-over-month spending changes per category
+- **Top spending categories** — rank categories by total spend
+- **Budget suggestions and alerts** — suggest limits based on patterns; alert when exceeded
+- **Income context** — provide summaries (savings rate, income vs. expenses) without generating tips for income
 
 ### Extensible Architecture
 Design the system so additional data sources (e.g., APIs from financial institutions) can be added later.
@@ -65,6 +71,9 @@ Each user has:
 
 A financial event representing either an expense or income.
 
+- **Expense**: a Transaction where `Amount < 0`. Expense is a *view/lens* on Transaction, not a separate entity or table.
+- **Income**: a Transaction where `Amount > 0`. Stored and used for summary/context (savings rate, income vs. expenses overview) but no tips or recommendations are generated for income.
+
 Attributes may include:
 
 - date
@@ -96,6 +105,8 @@ Users can create or modify their own categories.
 A user-defined spending limit for a category over a given time period (initially monthly).
 
 Budgets allow the system to generate alerts when spending approaches or exceeds limits.
+
+**Budget flow**: user imports transactions → system shows spending patterns → system suggests budget limits based on patterns → user accepts or adjusts → budget alerts kick in.
 
 ### Import
 
@@ -140,7 +151,7 @@ Prevents duplicate transaction insertion by comparing normalized transaction dat
 
 ### Budget Engine
 
-Tracks spending against configured budgets and generates alerts when thresholds are exceeded.
+Tracks spending against configured budgets and generates alerts when thresholds are exceeded. Also suggests budget limits based on observed spending patterns.
 
 ### Storage Layer
 
@@ -151,6 +162,24 @@ Persists system data including:
 - categories
 - budgets
 - import history
+
+### Analytics Engine
+
+Analyzes expense transactions (Amount < 0) to produce:
+
+- Recurring charge detection (subscriptions, repeated expenses)
+- Category trends (month-over-month spending changes)
+- Top spending categories
+- Income vs. expense summaries and savings rate
+
+### Tips / Recommendations (approach TBD)
+
+Both options are scaffolded so the decision can be made later:
+
+- **Option A**: API returns raw analytics data; the client generates user-facing tips.
+- **Option B**: API generates tip strings (e.g., "You spent 30% more on Dining this month").
+
+No tips are generated for income transactions.
 
 ---
 
