@@ -12,6 +12,7 @@ builder.Services.AddDatabase(builder.Configuration);
 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IImportService, ImportService>();
 
 var app = builder.Build();
 
