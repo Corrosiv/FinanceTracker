@@ -14,7 +14,7 @@ Sprint 1 — MVP (P0)
   - Implement EF Core models: `User` (placeholder), `Transaction`/`Expense`, `Category`, `Budget`, `Import` (4h)
   - CRUD endpoints for `Category` and `Expense` (controllers, DTOs, validators) (6h)
   - Configure `FinanceDbContext` and initial data seeding (2h)
-  - Add Swagger / OpenAPI and basic examples (1h)
+  - Add Scalar / OpenAPI and basic examples (1h)
   - Add GitHub Actions: build + tests on PR (2h)
 
 ---

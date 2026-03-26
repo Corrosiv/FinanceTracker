@@ -10,6 +10,7 @@ This API allows users to import financial transactions from CSV files, categoriz
 - **ORM:** EF Core  
 - **Database:** SQLite (V1, single-user)  
 - **Testing:** xUnit  
+- **API Docs:** Scalar (OpenAPI)  
 
 ---
 
