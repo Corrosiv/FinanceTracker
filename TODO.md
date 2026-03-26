@@ -31,7 +31,7 @@ Sprint 2 — Imports & Deduplication (P0)
   - Unit tests cover common edge cases.
 - Tasks:
   - CSV import endpoint with flexible column mapping and raw store (8h)
-  - Normalization pipeline that maps CSV -> `Transaction` entities (4h)
+  - Normalization pipeline that maps CSV -> `Transaction` entities (4h) 
   - Deduplication strategy (composite unique constraint + optional SHA256 hash) and tests (4h)
   - Import validation/error reporting for malformed files (3h)
   - DB-level edge-case tests using SQLite in-memory (requires real provider, not EF InMemory) (2h)
