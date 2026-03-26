@@ -16,6 +16,10 @@ Sprint 1 — MVP (P0)
   - Configure `FinanceDbContext` and initial data seeding (2h)
   - Add Scalar / OpenAPI and basic examples (1h)
   - Add GitHub Actions: build + tests on PR (2h)
+  - Unit tests for `UpdateAsync` (Category and Expense services) (1h)
+  - Unit tests for validators (`CreateCategoryValidator`, `CreateExpenseValidator`) (1h)
+  - Controller-level integration tests (HTTP status codes, routing, DTO mapping) (3h)
+  - Edge-case tests (duplicate category names, invalid CategoryId on expense, empty/null inputs) (2h)
 
 ---
 
