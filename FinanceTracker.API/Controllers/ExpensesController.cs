@@ -64,6 +64,10 @@ public class ExpensesController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateExpenseDto dto)
     {
+        var errors = UpdateExpenseValidator.Validate(dto);
+        if (errors.Count > 0)
+            return BadRequest(new { errors });
+
         var updated = await _expenseService.UpdateAsync(
             id,
             dto.Amount.HasValue ? -Math.Abs(dto.Amount.Value) : null,

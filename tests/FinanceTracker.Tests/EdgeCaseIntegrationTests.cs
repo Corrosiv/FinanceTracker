@@ -185,7 +185,7 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task WhenUpdatingExpenseWithZeroAmount_ShouldBeAccepted()
+    public async Task WhenUpdatingExpenseWithZeroAmount_ShouldReturnBadRequest()
     {
         var createDto = new CreateExpenseDto
         {
@@ -196,15 +196,14 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
         var createResponse = await _client.PostAsJsonAsync("/api/v1/expenses", createDto);
         var created = await createResponse.Content.ReadFromJsonAsync<ExpenseResponseDto>();
 
-        // No validator on the update path — zero amount goes through
         var updateDto = new UpdateExpenseDto { Amount = 0m };
         var response = await _client.PutAsJsonAsync($"/api/v1/expenses/{created!.Id}", updateDto);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
-    public async Task WhenUpdatingExpenseWithEmptyDescription_ShouldBeAccepted()
+    public async Task WhenUpdatingExpenseWithEmptyDescription_ShouldReturnBadRequest()
     {
         var createDto = new CreateExpenseDto
         {
@@ -215,11 +214,10 @@ public class EdgeCaseIntegrationTests : IClassFixture<WebApplicationFactory<Prog
         var createResponse = await _client.PostAsJsonAsync("/api/v1/expenses", createDto);
         var created = await createResponse.Content.ReadFromJsonAsync<ExpenseResponseDto>();
 
-        // No validator on the update path — empty description goes through
         var updateDto = new UpdateExpenseDto { Description = "" };
         var response = await _client.PutAsJsonAsync($"/api/v1/expenses/{created!.Id}", updateDto);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]

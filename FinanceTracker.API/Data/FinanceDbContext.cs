@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using FinanceTracker.API.Models;
 
 namespace FinanceTracker.API.Data
@@ -15,6 +15,7 @@ namespace FinanceTracker.API.Data
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Budget> Budgets => Set<Budget>();
         public DbSet<Import> Imports => Set<Import>();
+        public DbSet<RawImportRow> RawImportRows => Set<RawImportRow>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,6 +68,19 @@ namespace FinanceTracker.API.Data
                 e.HasOne(t => t.Category)
                  .WithMany(c => c.Transactions)
                  .HasForeignKey(t => t.CategoryId);
+            });
+
+            // RawImportRow
+            modelBuilder.Entity<RawImportRow>(e =>
+            {
+                e.HasKey(r => r.Id);
+                e.HasIndex(r => new { r.ImportId, r.RowNumber }).IsUnique();
+                e.HasOne(r => r.Import)
+                 .WithMany()
+                 .HasForeignKey(r => r.ImportId);
+                e.HasOne(r => r.Transaction)
+                 .WithMany()
+                 .HasForeignKey(r => r.TransactionId);
             });
 
             // Budget
