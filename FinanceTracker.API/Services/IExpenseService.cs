@@ -1,6 +1,11 @@
-﻿namespace FinanceTracker.API.Services
+﻿using System.Threading.Tasks;
+using FinanceTracker.API.Models;
+
+namespace FinanceTracker.API.Services
 {
     public interface IExpenseService
     {
+        Task<Expense> CreateAsync(Expense expense);
+        Task<Expense?> GetByIdAsync(int id);
     }
 }
