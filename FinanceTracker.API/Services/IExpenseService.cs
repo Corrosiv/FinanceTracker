@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
-using FinanceTracker.API.Models;
+﻿using FinanceTracker.API.Models;
 
-namespace FinanceTracker.API.Services
+namespace FinanceTracker.API.Services;
+
+public interface IExpenseService
 {
-    public interface IExpenseService
-    {
-        Task<Expense> CreateAsync(Expense expense);
-        Task<Expense?> GetByIdAsync(int id);
-    }
+    Task<Transaction> CreateAsync(Transaction transaction);
+    Task<Transaction?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Transaction>> GetAllAsync();
+    Task<Transaction?> UpdateAsync(Guid id, decimal? amount, string? description, DateTime? date, Guid? categoryId);
+    Task<bool> DeleteAsync(Guid id);
 }

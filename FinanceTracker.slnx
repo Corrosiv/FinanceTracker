@@ -8,5 +8,8 @@
     <File Path="system-overview.md" />
     <File Path="TODO.md" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FinanceTracker.Tests/FinanceTracker.Tests.csproj" />
+  </Folder>
   <Project Path="FinanceTracker.API/FinanceTracker.API.csproj" />
 </Solution>

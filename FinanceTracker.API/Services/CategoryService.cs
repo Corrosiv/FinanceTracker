@@ -1,30 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using FinanceTracker.API.Data;
 using FinanceTracker.API.Models;
 
-namespace FinanceTracker.API.Services
+namespace FinanceTracker.API.Services;
+
+public class CategoryService : ICategoryService
 {
-    public class CategoryService : ICategoryService
+    private readonly FinanceDbContext _db;
+
+    public CategoryService(FinanceDbContext db)
     {
-        private readonly List<Category> _store = new();
+        _db = db;
+    }
 
-        public Task<Category> CreateAsync(Category category)
-        {
-            category.Id = _store.Count + 1;
-            _store.Add(category);
-            return Task.FromResult(category);
-        }
+    public async Task<Category> CreateAsync(Category category)
+    {
+        category.Id = Guid.NewGuid();
+        category.CreatedAt = DateTime.UtcNow;
+        _db.Categories.Add(category);
+        await _db.SaveChangesAsync();
+        return category;
+    }
 
-        public Task<IEnumerable<Category>> GetAllAsync()
-        {
-            return Task.FromResult<IEnumerable<Category>>(_store);
-        }
+    public async Task<IEnumerable<Category>> GetAllAsync()
+    {
+        return await _db.Categories.AsNoTracking().ToListAsync();
+    }
 
-        public Task<Category?> GetByIdAsync(int id)
-        {
-            var c = _store.FirstOrDefault(x => x.Id == id);
-            return Task.FromResult(c);
-        }
+    public async Task<Category?> GetByIdAsync(Guid id)
+    {
+        return await _db.Categories.FindAsync(id);
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var category = await _db.Categories.FindAsync(id);
+        if (category is null) return false;
+        _db.Categories.Remove(category);
+        await _db.SaveChangesAsync();
+        return true;
     }
 }
