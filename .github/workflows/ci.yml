@@ -34,4 +34,8 @@ jobs:
         run: dotnet ef migrations list --project FinanceTracker.API/FinanceTracker.API.csproj
 
       - name: Validate EF Core Migrations (dry run)
-        run: dotnet ef database update --project FinanceTracker.API/FinanceTracker.API.csproj --no-build --dry-run
+        run: |
+          # generate an idempotent SQL script for migrations to ensure they are valid
+          dotnet ef migrations script --project FinanceTracker.API/FinanceTracker.API.csproj --idempotent --output migrations.sql
+          # fail the job if the generated script is empty
+          test -s migrations.sql
