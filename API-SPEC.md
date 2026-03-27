@@ -398,6 +398,70 @@ http://localhost:5000/api/v1
 
 ### 5.6 Tips / Recommendations (scaffolded — approach TBD)
 
+
+---
+
+## Error Handling
+
+The API returns errors in a consistent JSON format. For exceptions mapped by the server the response body will be a JSON object with an `error` property describing the problem. Example shape:
+
+```json
+{
+  "error": "A short, human-readable message"
+}
+```
+
+Common status codes and examples:
+
+- 400 Bad Request — validation errors or foreign key constraint failures
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+
+{
+  "error": "A referenced record does not exist."
+}
+```
+
+- 404 Not Found — route or resource not found
+
+```http
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+  "error": "Resource not found."
+}
+```
+
+- 409 Conflict — unique constraint / duplicate record
+
+```http
+HTTP/1.1 409 Conflict
+Content-Type: application/json
+
+{
+  "error": "A record with the same key already exists."
+}
+```
+
+- 500 Internal Server Error — unhandled exceptions
+
+```http
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+
+{
+  "error": "An unexpected error occurred."
+}
+```
+
+Notes:
+
+- Database constraint violations are mapped by the server middleware: UNIQUE constraint → 409, FOREIGN KEY constraint → 400. Unhandled exceptions fall back to 500.
+- 404 responses are returned by the framework for unmatched routes; the app config returns a JSON body (`{ "error": "Resource not found." }`) for 404s.
+
 > Both options are scaffolded so the decision can be made later.
 
 **GET** `/analytics/tips`

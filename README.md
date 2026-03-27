@@ -47,6 +47,15 @@ The project includes detailed documentation:
 - [Domain Model](docs/domain-model.md) – core entities, attributes, and relationships  
 - [Database Design](docs/database-design.md) – tables, columns, indexes, and constraints  
 - [API Specification](docs/API_SPEC.md) – REST endpoints, request/response formats, filtering, and pagination  
+ - [System Overview](system-overview.md) – high-level description of the system and architecture  
+ - [Domain Model](domain-model.md) – core entities, attributes, and relationships  
+ - API database design: see the EF Core `FinanceDbContext` and migrations in `FinanceTracker.API/Data` and `FinanceTracker.API/Migrations`  
+ - [API Specification](API-SPEC.md) – REST endpoints, request/response formats, filtering, and pagination  
+
+CI and examples:
+
+- Continuous Integration: GitHub Actions workflow runs restore, build, tests, and EF Core migration validation on PRs and pushes.
+- Examples: see the `examples/` directory for sample CSV bank statements and API request/response JSON files for each endpoint group.
 
 ---
 

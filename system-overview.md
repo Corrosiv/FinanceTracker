@@ -219,6 +219,12 @@ All financial data is scoped to a specific user to ensure privacy and security.
 
 ---
 
+## CI and Examples
+
+The repository includes a GitHub Actions workflow that runs on pushes and pull requests. The CI job restores, builds, runs tests, and validates EF Core migrations (lists migrations and performs a dry-run update) to ensure migrations apply cleanly.
+
+Example assets are provided in the `examples/` directory and include sample CSV bank statements (`us-bank-statement.csv`, `mx-bank-statement.csv`) and API request/response JSON files for each endpoint group. These are useful for manual testing and documentation.
+
 ## 8. Future Extensions
 
 Potential improvements include:
