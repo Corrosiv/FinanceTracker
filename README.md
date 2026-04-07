@@ -1,96 +1,110 @@
-# FinanceTracker
+# 💰 FinanceTracker API
 
-Personal Finance Tracker API built with ASP.NET Core.  
-This API allows users to import financial transactions from CSV files, categorize expenses and income, track budgets, and generate financial insights.
+> A personal finance REST API that imports bank transactions from CSV files, categorizes spending, tracks budgets, and generates financial insights — built end-to-end as a portfolio project.
 
----
-
-## Tech Stack
-- **Backend:** ASP.NET Core Web API  
-- **ORM:** EF Core  
-- **Database:** SQLite (V1, single-user)  
-- **Testing:** xUnit  
-- **API Docs:** Scalar (OpenAPI)  
+**Tech stack:** ASP.NET Core · EF Core · SQLite · xUnit · GitHub Actions · OpenAPI (Scalar)
 
 ---
 
-## Architecture
+## Overview
 
-The project uses a **layered architecture** for modularity and scalability:
-
-- **Controllers** – handle HTTP requests and responses.  
-- **Services** – business logic, including import processing, budgeting, and analytics.  
-- **DTOs** – data transfer objects for API responses and requests.  
-- **Data** – EF Core entities and database context.  
-- **Validators** – input validation and consistency checks.  
-- **Middleware** – global error handling, logging, etc.  
-
-The architecture is designed for **extensibility**, allowing future integration of authentication, multiple users, and additional data sources.
+- **CSV Import Pipeline** — upload bank statements from any format; flexible column mapping, raw row storage, and SHA-256 deduplication
+- **Budget Tracking** — per-category spending limits with pattern-based suggestions and overspend alerts
+- **Analytics Engine** — top spending categories, month-over-month trends, recurring charge detection, income vs. expenses summary
+- **Tips Scaffold** — both raw analytics data and generated recommendation strings (approach TBD)
 
 ---
 
-## Features (V1)
+## What This Project Demonstrates
 
-- CSV import with flexible column mapping  
-- Deduplication of transactions  
-- Transaction categorization  
-- Budget tracking per category and period  
-- Financial insights and alerts for overspending  
+| Area | Details |
+|------|---------|
+| **Architecture** | Layered design (Controllers → Services → EF Core), DTOs, input validators, global exception-handling middleware |
+| **Data Handling** | CSV parsing (CsvHelper), SHA-256 dedup, composite unique constraints, EF Core migrations |
+| **Testing** | 133 tests (xUnit + Moq) — unit, integration (`WebApplicationFactory`), and real-SQLite edge-case tests |
+| **CI/CD** | GitHub Actions pipeline: restore → build → test → EF migration validation |
+| **API Design** | RESTful endpoints with pagination, filtering, consistent JSON error responses (400/404/409/500) |
+| **Real-World Problem Solving** | Handles arbitrary bank CSV formats, prevents duplicate imports, detects subscriptions automatically |
 
 ---
 
-## Documentation
+## API Usage Example
 
-The project includes detailed documentation:
+**1. Create a category**
 
-- [System Overview](docs/system-overview.md) – high-level description of the system and architecture  
-- [Domain Model](docs/domain-model.md) – core entities, attributes, and relationships  
-- [Database Design](docs/database-design.md) – tables, columns, indexes, and constraints  
-- [API Specification](docs/API_SPEC.md) – REST endpoints, request/response formats, filtering, and pagination  
- - [System Overview](system-overview.md) – high-level description of the system and architecture  
- - [Domain Model](domain-model.md) – core entities, attributes, and relationships  
- - API database design: see the EF Core `FinanceDbContext` and migrations in `FinanceTracker.API/Data` and `FinanceTracker.API/Migrations`  
- - [API Specification](API-SPEC.md) – REST endpoints, request/response formats, filtering, and pagination  
+```
+POST /api/v1/categories
+```
+```json
+{ "name": "Groceries" }
+```
 
-CI and examples:
+**2. Import a bank statement**
 
-- Continuous Integration: GitHub Actions workflow runs restore, build, tests, and EF Core migration validation on PRs and pushes.
-- Examples: see the `examples/` directory for sample CSV bank statements and API request/response JSON files for each endpoint group.
+```
+POST /api/v1/imports/upload
+Content-Type: multipart/form-data
+```
+
+**3. View spending analytics**
+
+```
+GET /api/v1/analytics/spending?period=monthly
+```
+```json
+[
+  { "category_name": "Groceries", "total_spent": 250.50, "rank": 1 },
+  { "category_name": "Utilities", "total_spent": 80.00, "rank": 2 }
+]
+```
+
+**4. Check budget alerts**
+
+```
+GET /api/v1/analytics/alerts
+```
+```json
+[
+  {
+    "category_name": "Housing",
+    "spent_amount": 900.00,
+    "budget_limit": 1000.00,
+    "alert": "Approaching budget limit"
+  }
+]
+```
+
+> Full request/response examples for every endpoint are in [`examples/`](examples/).
 
 ---
 
 ## Getting Started
 
-1. Clone the repository:  
 ```bash
 git clone https://github.com/Corrosiv/FinanceTracker.git
-```
-
-2. Navigate to the project folder:  
-```bash
 cd FinanceTracker
-```
-
-3. Run the API:  
-```bash
-dotnet run
-```
-
-4. Run tests:  
-```bash
+dotnet run --project FinanceTracker.API
 dotnet test
 ```
+
+OpenAPI docs available at `http://localhost:5000/scalar/v1` after running.
+
+---
+
+## Documentation
+
+Detailed design docs live in [`docs/`](docs/):
+
+- [System Overview](docs/system-overview.md) — architecture, data flow, design principles
+- [Domain Model](docs/domain-model.md) — entities, relationships, ER diagram
+- [API Specification](docs/API-SPEC.md) — all REST endpoints, request/response formats, error handling
+- [Database Design](docs/database-design.md) — tables, columns, indexes, constraints
 
 ---
 
 ## Future Improvements
 
-- User authentication and multi-user support (planned for V2) 
-- Real-time alerts and notifications
+- User authentication and multi-user support
+- Automatic transaction categorization (ML)
 - Direct bank integrations
-- Automatic transaction categorization using machine learning
 - Multi-currency support
-
----
-
-**End of README**
