@@ -1,4 +1,4 @@
-# 💰 FinanceTracker API
+# FinanceTracker API
 
 > A personal finance REST API that imports bank transactions from CSV files, categorizes spending, tracks budgets, and generates financial insights — built end-to-end as a portfolio project.
 
