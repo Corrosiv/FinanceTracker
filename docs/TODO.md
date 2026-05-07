@@ -2,40 +2,6 @@
 
 This file organizes the V1 scope into short sprints with priorities, acceptance criteria, and rough estimates so we can iterate predictably.
 
-HARDENING CHECKLIST
-Below are focused items that must be addressed before handing off or running the API in production. Each entry includes a one-character status bracket, target files, and clear acceptance criteria so they can be tracked from this document.
-
-High priority (must address before handoff / production maintenance)
-- [ ] User scoping & auth — `FinanceTracker.API/Controllers/CategoriesController.cs` (lines ~15	6) and all controllers
-    - Acceptance: Replace hard-coded `DefaultUserId` with per-request user resolution (authentication middleware or injected `IUserContext`). Add `[Authorize]` to relevant controllers and tests that validate per-user isolation.
-- [ ] Database constraint correctness vs tests — `FinanceTracker.API/Data/FinanceDbContext.cs`, `FinanceTracker.API/Migrations/*`, `tests/*`
-    - Acceptance: Add SQLite-backed integration tests (in-memory/file) that verify composite unique constraints, FK violations, and deduplication behavior. Ensure migrations apply cleanly in CI.
-- [ ] Deduplication & idempotent imports — `FinanceTracker.API/Services/ImportService.cs`, `FinanceTracker.API/Data/FinanceDbContext.cs`, `FinanceTracker.API/Migrations/*`, `tests/FinanceTracker.Tests/ImportServiceTests.cs`
-    - Acceptance: Import flow handles DB-level unique constraint violations gracefully (mark duplicates / return 409 where appropriate). Add tests that simulate repeated imports and intra-batch duplicates and assert import record statuses and duplicate counts.
-- [ ] Error handling & consistent JSON responses — `ExceptionHandlingMiddleware`, controllers
-    - Acceptance: Middleware exists and maps exceptions to 400/404/409/500 with a consistent JSON schema. Add unit tests for middleware mappings and ensure validators return typed errors matching schema.
-
-Medium priority (improve quality/readability/maintainability)
-- [ ] DTO mapping & reduce repeated mapping code — `FinanceTracker.API/Controllers/*`
-    - Acceptance: Centralized mapping (helper or AutoMapper) used across controllers; DTO shapes consistent and tests validate response shapes.
-- [ ] Validation pipeline integration — validators referenced in this document and `Controllers`
-    - Acceptance: Integrate validators via model binding / filter (e.g., FluentValidation) or a reusable filter so validation failures are returned with consistent error payloads.
-- [ ] Null-safety / defensive checks in services — `FinanceTracker.API/Services/ITipsService.cs`, `TipsService.cs`
-    - Acceptance: Services defend against null/empty analytics results and unit tests cover no-data scenarios.
-- [ ] Make Tips behavior configurable — `TipsService` / `ITipsService`
-    - Acceptance: Tips endpoint supports returning raw analytics only or generated strings (query param or request DTO). Avoid hard-coded currency symbols in service-level strings.
-
-Low priority / nice-to-have
-- [ ] CI migration & coverage checks — `.github/workflows/*`
-    - Acceptance: CI includes a step that validates EF migrations apply cleanly (SQLite) and publishes test coverage.
-- [ ] Add sample CSVs and examples — `examples/`
-    - Acceptance: Representative CSV files used by tests are included in `examples/` and documented in `README.md`.
-- [ ] Monetary formatting and localization plan
-    - Acceptance: DTOs return numeric amounts; formatting is left to client or localized presentation layer.
-
-Test-specific checklist
-- [ ] Replace critical InMemory tests with SQLite provider for: unique composite index enforcement, FK violation behavior, and deduplication hash uniqueness.
-- [ ] Keep quick InMemory tests for algorithmic logic and parsing, but validate DB constraints with real provider tests.
 
 ---
 
@@ -195,10 +161,49 @@ Below are concrete development steps, acceptance criteria and rough estimates to
      - [ ] Implement normalization function and bulk apply job with dry-run option (3h) (P2)
      - [ ] Tests for rule matching and bulk-apply idempotency (2h) (P2)
 
+---
+
+HARDENING CHECKLIST
+Below are focused items that must be addressed before handing off or running the API in production. Each entry includes a one-character status bracket, target files, and clear acceptance criteria so they can be tracked from this document.
+
+High priority (must address before handoff / production maintenance)
+- [ ] User scoping & auth — `FinanceTracker.API/Controllers/CategoriesController.cs` (lines ~15	6) and all controllers
+    - Acceptance: Replace hard-coded `DefaultUserId` with per-request user resolution (authentication middleware or injected `IUserContext`). Add `[Authorize]` to relevant controllers and tests that validate per-user isolation.
+- [ ] Database constraint correctness vs tests — `FinanceTracker.API/Data/FinanceDbContext.cs`, `FinanceTracker.API/Migrations/*`, `tests/*`
+    - Acceptance: Add SQLite-backed integration tests (in-memory/file) that verify composite unique constraints, FK violations, and deduplication behavior. Ensure migrations apply cleanly in CI.
+- [ ] Deduplication & idempotent imports — `FinanceTracker.API/Services/ImportService.cs`, `FinanceTracker.API/Data/FinanceDbContext.cs`, `FinanceTracker.API/Migrations/*`, `tests/FinanceTracker.Tests/ImportServiceTests.cs`
+    - Acceptance: Import flow handles DB-level unique constraint violations gracefully (mark duplicates / return 409 where appropriate). Add tests that simulate repeated imports and intra-batch duplicates and assert import record statuses and duplicate counts.
+- [ ] Error handling & consistent JSON responses — `ExceptionHandlingMiddleware`, controllers
+    - Acceptance: Middleware exists and maps exceptions to 400/404/409/500 with a consistent JSON schema. Add unit tests for middleware mappings and ensure validators return typed errors matching schema.
+
+Medium priority (improve quality/readability/maintainability)
+- [ ] DTO mapping & reduce repeated mapping code — `FinanceTracker.API/Controllers/*`
+    - Acceptance: Centralized mapping (helper or AutoMapper) used across controllers; DTO shapes consistent and tests validate response shapes.
+- [ ] Validation pipeline integration — validators referenced in this document and `Controllers`
+    - Acceptance: Integrate validators via model binding / filter (e.g., FluentValidation) or a reusable filter so validation failures are returned with consistent error payloads.
+- [ ] Null-safety / defensive checks in services — `FinanceTracker.API/Services/ITipsService.cs`, `TipsService.cs`
+    - Acceptance: Services defend against null/empty analytics results and unit tests cover no-data scenarios.
+- [ ] Make Tips behavior configurable — `TipsService` / `ITipsService`
+    - Acceptance: Tips endpoint supports returning raw analytics only or generated strings (query param or request DTO). Avoid hard-coded currency symbols in service-level strings.
+
+Low priority / nice-to-have
+- [ ] CI migration & coverage checks — `.github/workflows/*`
+    - Acceptance: CI includes a step that validates EF migrations apply cleanly (SQLite) and publishes test coverage.
+- [ ] Add sample CSVs and examples — `examples/`
+    - Acceptance: Representative CSV files used by tests are included in `examples/` and documented in `README.md`.
+- [ ] Monetary formatting and localization plan
+    - Acceptance: DTOs return numeric amounts; formatting is left to client or localized presentation layer.
+
+Test-specific checklist
+- [ ] Replace critical InMemory tests with SQLite provider for: unique composite index enforcement, FK violation behavior, and deduplication hash uniqueness.
+- [ ] Keep quick InMemory tests for algorithmic logic and parsing, but validate DB constraints with real provider tests.
+
+---
+
 General notes and next steps
- - [ ] For each feature, add migrations and keep the EF provider compatibility with SQLite for tests. Use real provider tests for DB constraints where possible.
- - [ ] Add small integration tests (SQLite file-based) for cross-feature scenarios (multi-user + imports + budgets).
- - [ ] Iterate: implement rule-based behavior first, then augment with ML and background services as needed.
+ - For each feature, add migrations and keep the EF provider compatibility with SQLite for tests. Use real provider tests for DB constraints where possible.
+ - Add small integration tests (SQLite file-based) for cross-feature scenarios (multi-user + imports + budgets).
+ - Iterate: implement rule-based behavior first, then augment with ML and background services as needed.
 
 Acceptance criteria template (use per task)
  - Given X, When Y, Then Z — include endpoint, payload, expected DB state, and tests.
