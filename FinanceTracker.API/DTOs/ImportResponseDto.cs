@@ -14,6 +14,7 @@ public class ImportResponseDto
 public class ImportRowErrorDto
 {
     public int RowNumber { get; set; }
+    public string? Field { get; set; }
     public string Error { get; set; } = null!;
     public string? RawData { get; set; }
 }

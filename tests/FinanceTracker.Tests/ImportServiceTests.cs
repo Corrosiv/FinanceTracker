@@ -312,4 +312,185 @@ public class ImportServiceTests
         var tx = await db.Transactions.FirstAsync();
         Assert.Equal("WALMART, SUPERCENTER", tx.RawDescription);
     }
+
+    // ── Field-level error reporting ────────────────────────────────
+
+    [Fact]
+    public async Task WhenRowHasInvalidDate_ShouldIncludeFieldNameInError()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Date,Description,Amount,Balance\nBADDATE,GOOD,-10.00,\n";
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "field-error.csv", UsMapping);
+
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Equal(1, error.RowNumber);
+        Assert.Equal("Date", error.Field);
+        Assert.Contains("date", error.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task WhenRowHasInvalidAmount_ShouldIncludeFieldNameInError()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Date,Description,Amount,Balance\n03/15/2026,ITEM,NOTANUMBER,\n";
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "amount-error.csv", UsMapping);
+
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Equal(1, error.RowNumber);
+        Assert.Equal("Amount", error.Field);
+        Assert.Contains("amount", error.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task WhenRowHasMissingDescription_ShouldIncludeFieldNameInError()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Date,Description,Amount,Balance\n03/15/2026,,-10.00,\n";
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "description-error.csv", UsMapping);
+
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Equal(1, error.RowNumber);
+        Assert.Equal("Description", error.Field);
+    }
+
+    [Fact]
+    public async Task WhenInvalidDebitAmount_ShouldIncludeDebitFieldNameInError()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Fecha,Descripcion,Cargo,Abono,Saldo\n15/03/2026,OXXO,NOTANUMBER,,8500.00\n";
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "debit-error.csv", MxMapping);
+
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Equal("Debit", error.Field);
+    }
+
+    [Fact]
+    public async Task WhenInvalidCreditAmount_ShouldIncludeCreditFieldNameInError()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Fecha,Descripcion,Cargo,Abono,Saldo\n15/03/2026,TRANSFER,,NOTANUMBER,8500.00\n";
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "credit-error.csv", MxMapping);
+
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Equal("Credit", error.Field);
+    }
+
+    // ── Column validation (upfront) ────────────────────────────────
+
+    [Fact]
+    public async Task WhenRequiredColumnIsMissing_ShouldReportHeaderError()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Date,Amount,Balance\n03/15/2026,-10.00,\n"; // Missing Description
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "missing-column.csv", UsMapping);
+
+        Assert.Equal("Failed", result.Status);
+        Assert.Equal(0, result.RowCount); // No rows processed
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Equal(0, error.RowNumber); // Header error
+        Assert.Equal("Header", error.Field);
+        Assert.Contains("Missing required columns", error.Error);
+        Assert.Contains("Description", error.Error);
+    }
+
+    [Fact]
+    public async Task WhenMultipleColumnsAreMissing_ShouldReportAllMissingColumns()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Amount,Balance\n-10.00,\n"; // Missing Date and Description
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "missing-multiple.csv", UsMapping);
+
+        Assert.Equal("Failed", result.Status);
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Contains("Date", error.Error);
+        Assert.Contains("Description", error.Error);
+    }
+
+    [Fact]
+    public async Task WhenAmountColumnMissing_ShouldReportErrorIfNoDebitCredit()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Date,Description,Balance\n03/15/2026,ITEM,\n"; // Missing Amount, Debit, Credit
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "missing-amount.csv", UsMapping);
+
+        Assert.Equal("Failed", result.Status);
+        Assert.Single(result.Errors);
+        var error = result.Errors[0];
+        Assert.Contains("Amount", error.Error);
+    }
+
+    [Fact]
+    public async Task WhenColumnNameIsCaseInsensitive_ShouldMatch()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "date,description,amount,balance\n03/15/2026,ITEM,-10.00,\n"; // lowercase headers
+
+        var result = await svc.ImportCsvAsync(ToCsvStream(csv), "lowercase.csv", UsMapping);
+
+        Assert.Equal("Completed", result.Status);
+        Assert.Equal(1, result.ProcessedCount);
+        Assert.Empty(result.Errors);
+    }
+
+    // ── Silent duplicate handling ──────────────────────────────────
+
+    [Fact]
+    public async Task WhenImportingPreviouslySubmittedFile_ShouldSilentlySkipDuplicates()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var csv = "Date,Description,Amount,Balance\n03/15/2026,COFFEE,-4.50,\n";
+
+        var firstImport = await svc.ImportCsvAsync(ToCsvStream(csv), "first.csv", UsMapping);
+        Assert.Equal(1, firstImport.ProcessedCount);
+        Assert.Equal(0, firstImport.DuplicateCount);
+
+        // Re-upload the same file
+        var secondImport = await svc.ImportCsvAsync(ToCsvStream(csv), "second.csv", UsMapping);
+        Assert.Equal(1, secondImport.RowCount);
+        Assert.Equal(0, secondImport.ProcessedCount); // Silently skipped
+        Assert.Equal(1, secondImport.DuplicateCount);
+        Assert.Empty(secondImport.Errors); // No errors, just silently skipped
+    }
+
+    [Fact]
+    public async Task WhenUploadingPartiallyDuplicateFile_ShouldSkipDuplicatesAndProcessNew()
+    {
+        using var db = CreateInMemoryDb();
+        var svc = new ImportService(db);
+        var firstCsv = "Date,Description,Amount,Balance\n03/15/2026,OLD COFFEE,-4.50,\n";
+        var secondCsv = "Date,Description,Amount,Balance\n03/15/2026,OLD COFFEE,-4.50,\n03/16/2026,NEW COFFEE,-5.00,\n";
+
+        await svc.ImportCsvAsync(ToCsvStream(firstCsv), "first.csv", UsMapping);
+        var secondImport = await svc.ImportCsvAsync(ToCsvStream(secondCsv), "second.csv", UsMapping);
+
+        Assert.Equal(2, secondImport.RowCount);
+        Assert.Equal(1, secondImport.ProcessedCount); // Only new one
+        Assert.Equal(1, secondImport.DuplicateCount); // Only old one
+        Assert.Empty(secondImport.Errors);
+    }
 }
